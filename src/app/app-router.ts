@@ -6,9 +6,5 @@ export const AppRoutes: Routes = [
         redirectTo: 'pages',
         pathMatch: 'full'
     },
-    {
-        path: 'pages',
-        loadChildren: () => import('@pages/pages-router')
-            .then((module) => module.PagesRoutes)
-    },
+    {path: 'pages', loadChildren: () => import('./_pages/users/users.module').then(m => m.UsersModule)},
 ];

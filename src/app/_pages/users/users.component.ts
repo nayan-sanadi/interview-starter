@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-users',
-  standalone: true,
-  imports: [CommonModule],
+  //standalone: true,
+  // imports: [CommonModule],
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.scss']
 })
