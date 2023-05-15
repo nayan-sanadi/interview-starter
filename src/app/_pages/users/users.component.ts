@@ -59,18 +59,24 @@ export class UsersComponent {
 
     this.userForm = this.formGroup.group({
       id:['',[Validators.required]],
-      firstName:['',[Validators.required]],
-      maidenName:['',[Validators.required]],
-      lastName:['',[Validators.required]],
+      firstName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
+      maidenName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
+      lastName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
       age:['',[Validators.required]],
       gender:['',[Validators.required]],
-      email:['',[Validators.required]],
+      email:['',[Validators.required,Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
       phone:['',[Validators.required]],
       birthDate:['',[Validators.required]],
     });
 
     this.getUserList();
   }
+
+  public noWhitespaceValidator(control: FormControl) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { 'whitespace': true };
+}
   getUserList()
   {
     this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
@@ -78,6 +84,7 @@ export class UsersComponent {
       this.userData=res.users;
       this.userData.forEach((element:any) => {
         element.show=false
+        element.disabledSpinner=false
       });
       this.loadData=false;
        
@@ -115,6 +122,11 @@ export class UsersComponent {
 
   saveUser()
   {
+
+    if(this.userForm.status=="VALID")
+   {
+   
+
     this.disabledSpinner=true;
     this.save=true;
     this.newData= this.userData;
@@ -132,16 +144,24 @@ export class UsersComponent {
         element.email = this.userForm.value.email;
         element.phone = this.userForm.value.phone;
         element.birthDate = this.userForm.value.birthDate;
-        element.show = false;
+        
+        element.disabledSpinner = true;
       }
    });
 
    this.userData=this.newData;
- 
+   this.newData.forEach((element:any) => {
+
+    if(element.id===this.userForm.value.id)
+    {
+    element.show = false;
     this.disabledSpinner=false;
     this.save=false;
+    }
+    
+  });
   }, 5000);
-
+   }
    
   }
 

@@ -73,6 +73,9 @@
                     matInput
                     [formControlName]="'firstName'"
                     >
+                    <mat-error *ngIf="userForm.get('gender').hasError('required')">
+                        Enter firstName!
+                          </mat-error> 
             </mat-form-field>
 
             <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
@@ -82,6 +85,9 @@
                     [formControlName]="'maidenName'"
                     
                     >
+                    <mat-error *ngIf="userForm.get('maidenName').hasError('required')">
+                        Enter firstName!
+                          </mat-error> 
             </mat-form-field>
 
 
@@ -92,6 +98,9 @@
                     [formControlName]="'lastName'"
                     
                     >
+                    <mat-error *ngIf="userForm.get('lastName').hasError('required')">
+                        Enter lastName!
+                          </mat-error> 
             </mat-form-field>
 
             <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
@@ -101,6 +110,9 @@
                     [formControlName]="'age'"
                     
                     >
+                    <mat-error *ngIf="userForm.get('age').hasError('required')">
+                        Enter Age!
+                          </mat-error> 
             </mat-form-field>
 
 
@@ -110,6 +122,9 @@
                 <mat-select  [formControlName]="'gender'" placeholder="Gender">
                     <mat-option *ngFor="let gender of genderArray" [value]="gender.value">{{gender.name}}</mat-option> 
                 </mat-select>
+                <mat-error *ngIf="userForm.get('gender').hasError('required')">
+                    Enter Gender!
+                      </mat-error> 
             </mat-form-field>
 
 
@@ -119,6 +134,12 @@
                 <input
                 matInput
                 [formControlName]="'email'" >
+                <mat-error *ngIf="userForm.get('email').hasError('required')">
+                    Enter Email!
+                      </mat-error> 
+                      <mat-error *ngIf="userForm.get('email').hasError('pattern')">
+                        Enter Valid Email Address
+                    </mat-error> 
             </mat-form-field>
 
 
@@ -127,6 +148,9 @@
                 <input
                 matInput
                 [formControlName]="'phone'" >
+                <mat-error *ngIf="userForm.get('phone').hasError('required')">
+                    Enter Phone Number!
+                      </mat-error> 
             </mat-form-field>
 
             <mat-form-field fxFlex="33" class="pl-4"  appearance="outline">
@@ -135,6 +159,9 @@
                 <mat-hint>MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="userForm.get('birthDate').hasError('required')">
+                    Select Birth Date!
+                      </mat-error> 
             </mat-form-field>
 
             <div class="m-2 px-4" fxLayout="row" fxLayoutAlign="start start" align="start">
