@@ -20,8 +20,8 @@ export class UsersComponent {
 
   disabledSpinner:boolean=false;
   loadData:boolean=true;
-  userData:any;
-  newData:any;
+  userData:any=[];
+  newData:any=[];
 
 
   columnsToDisplay = ['username','age','gender','email','phone','birthDate'];
