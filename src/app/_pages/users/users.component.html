@@ -48,7 +48,7 @@
 
              <ng-container matColumnDef="birthDate">
                <th mat-header-cell *matHeaderCellDef>Birth Date</th>
-               <td mat-cell *matCellDef="let element"> {{element?.birthDate}} </td>
+               <td mat-cell *matCellDef="let element"> {{element?.birthDate | date: 'YYYY-MM-dd'}} </td>
              </ng-container>
 
 
@@ -131,7 +131,7 @@
 
             <mat-form-field fxFlex="33" class="pl-4"  appearance="outline">
                 <mat-label>Birth Date</mat-label>
-                <input matInput [matDatepicker]="picker">
+                <input matInput [matDatepicker]="picker" [formControlName]="'birthDate'">
                 <mat-hint>MM/DD/YYYY</mat-hint>
                 <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>

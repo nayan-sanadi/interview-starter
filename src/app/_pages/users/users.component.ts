@@ -107,7 +107,7 @@ export class UsersComponent {
     this.userForm.get('gender').setValue(foundElement.gender);
     this.userForm.get('email').setValue(foundElement.email);
     this.userForm.get('phone').setValue(foundElement.phone);
-    this.userForm.get('birthDate').setValue(this.datepipe.transform(foundElement.birthDate, 'MM/dd/yyyy'));
+    this.userForm.get('birthDate').setValue(foundElement.birthDate);
     
     this.userData[index].show = !this.userData[index].show;
   }
@@ -115,12 +115,43 @@ export class UsersComponent {
 
   saveUser()
   {
+    this.disabledSpinner=true;
+    this.save=true;
+    this.newData= this.userData;
+    setTimeout(() => {
+    this.newData.forEach((element:any) => {
 
+      if(element.id===this.userForm.value.id)
+      {
+        
+        element.firstName = this.userForm.value.firstName;
+        element.lastName = this.userForm.value.lastName;
+        element.maidenName = this.userForm.value.maidenName;
+        element.gender = this.userForm.value.gender;
+        element.age = this.userForm.value.age;
+        element.email = this.userForm.value.email;
+        element.phone = this.userForm.value.phone;
+        element.birthDate = this.userForm.value.birthDate;
+        element.show = false;
+      }
+   });
+
+   this.userData=this.newData;
+ 
+    this.disabledSpinner=false;
+    this.save=false;
+  }, 5000);
+
+   
   }
 
   closeExpendedDiv(value:any)
   {
-    
+    const foundElement = this.userData.find((elem:any) => elem !== undefined && elem.id === value.id)    
+    const index = this.userData.indexOf(foundElement);
+    this.userData[index].show = !this.userData[index].show;
+    this.disabledSpinner=false;
+    this.save=false;
   }
 
 }
