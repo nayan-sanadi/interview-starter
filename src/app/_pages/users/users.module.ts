@@ -32,6 +32,8 @@ import { UsersComponent } from './users.component';
 import { UsersService } from './users.service';
 
 
+
+
 @NgModule({
   declarations: [UsersComponent],
   imports: [
@@ -62,8 +64,9 @@ import { UsersService } from './users.service';
     MatProgressSpinnerModule,
     HttpClientModule,
     MatSortModule,
-    MatExpansionModule
+    MatExpansionModule,
+    DatePipe
   ],
-  providers:[UsersService]
+  providers:[UsersService,DatePipe]
 })
 export class UsersModule { }

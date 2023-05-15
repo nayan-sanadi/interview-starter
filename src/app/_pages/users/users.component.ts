@@ -3,6 +3,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-users',
@@ -46,6 +47,7 @@ export class UsersComponent {
   constructor(
     private _usersService:UsersService,
     private formGroup: FormBuilder,
+    public datepipe: DatePipe,
     
   ) {
 
@@ -99,6 +101,14 @@ export class UsersComponent {
     this.userForm.get('id').setValue(foundElement.id);
     this.userForm.get('firstName').setValue(foundElement.firstName);
     this.userForm.get('maidenName').setValue(foundElement.maidenName);
+    this.userForm.get('lastName').setValue(foundElement.lastName);
+    this.userForm.get('age').setValue(foundElement.age);
+    this.userForm.get('gender').setValue(foundElement.gender);
+    this.userForm.get('gender').setValue(foundElement.gender);
+    this.userForm.get('email').setValue(foundElement.email);
+    this.userForm.get('phone').setValue(foundElement.phone);
+    this.userForm.get('birthDate').setValue(this.datepipe.transform(foundElement.birthDate, 'MM/dd/yyyy'));
+    
     this.userData[index].show = !this.userData[index].show;
   }
 

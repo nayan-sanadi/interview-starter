@@ -64,7 +64,95 @@
     
        <div class="example-element-description">
        
-           
+                <form [formGroup]="userForm"
+                (ngSubmit)="saveUser()">
+
+            <mat-form-field  fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'firstName'"
+                    >
+            </mat-form-field>
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Maiden Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'maidenName'"
+                    
+                    >
+            </mat-form-field>
+
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'lastName'"
+                    
+                    >
+            </mat-form-field>
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Age</mat-label>
+                <input
+                    matInput
+                    [formControlName]="'age'"
+                    
+                    >
+            </mat-form-field>
+
+
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Gender</mat-label>
+                <mat-select  [formControlName]="'gender'" placeholder="Gender">
+                    <mat-option *ngFor="let gender of genderArray" [value]="gender.value">{{gender.name}}</mat-option> 
+                </mat-select>
+            </mat-form-field>
+
+
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Email</mat-label>
+                <input
+                matInput
+                [formControlName]="'email'" >
+            </mat-form-field>
+
+
+            <mat-form-field fxFlex="33" class="pl-4" appearance="outline">
+                <mat-label>Phone</mat-label>
+                <input
+                matInput
+                [formControlName]="'phone'" >
+            </mat-form-field>
+
+            <mat-form-field fxFlex="33" class="pl-4"  appearance="outline">
+                <mat-label>Birth Date</mat-label>
+                <input matInput [matDatepicker]="picker">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <div class="m-2 px-4" fxLayout="row" fxLayoutAlign="start start" align="start">
+            <button   color="primary"   mat-raised-button  type="submit"
+            class="save-btn" [disabled]="save">
+            <b>Save</b>
+            <ng-container *ngIf="disabledSpinner"
+            ><mat-icon><mat-spinner diameter="20"></mat-spinner></mat-icon></ng-container>
+            
+                </button> 
+
+                <button   color="warn"  class="ml-10 cancleButton"   mat-raised-button matStepperPrevious type="button"
+                (click)="closeExpendedDiv(element)">
+            <b>Cancel</b>
+            
+                </button> 
+                </div>
+        </form>
 
           
          
