@@ -1,1 +1,107 @@
-<p>users works!</p>
+<div class="example-header" fxLayout="row">
+
+    <!-- Header -->
+    <div class="bg-card relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-4 px-6 md:px-4 borders-b">
+
+       <!-- Title -->
+       <div class="text-2xl font-extrabold tracking-tight" >
+          <div class="flex-auto p-4 sm:p-4" >
+         User Management
+          </div>
+          <mat-progress-bar mode="indeterminate" *ngIf="loadData"></mat-progress-bar>
+      </div>
+
+      <div class="flex-auto p-4 sm:p-4" >
+
+       <div  class="bg-card mat-elevation-z8  flex flex-col flex-auto justify" *ngIf="userData?.length>0">
+
+           <table mat-table 
+           [dataSource]="userData" multiTemplateDataRows
+           class=" table-sample">
+           <ng-container matColumnDef="username">
+               <th mat-header-cell *matHeaderCellDef> User Name </th>
+               <td mat-cell *matCellDef="let element"> {{element?.firstName}} {{element?.maidenName}} {{element?.lastName}}</td>
+             </ng-container>
+
+             <ng-container matColumnDef="age">
+               <th mat-header-cell *matHeaderCellDef> Age</th>
+               <td mat-cell *matCellDef="let element"> {{element?.age}} </td>
+             </ng-container>
+
+
+             <ng-container matColumnDef="gender">
+               <th mat-header-cell *matHeaderCellDef> Gender</th>
+               <td mat-cell *matCellDef="let element"> {{element?.gender}} </td>
+             </ng-container>
+
+             <ng-container matColumnDef="email">
+               <th mat-header-cell *matHeaderCellDef>Email</th>
+               <td mat-cell *matCellDef="let element"> {{element?.email}} </td>
+             </ng-container>
+
+
+
+             <ng-container matColumnDef="phone">
+               <th mat-header-cell *matHeaderCellDef>Phone</th>
+               <td mat-cell *matCellDef="let element"> {{element?.phone}} </td>
+             </ng-container>
+
+             <ng-container matColumnDef="birthDate">
+               <th mat-header-cell *matHeaderCellDef>Birth Date</th>
+               <td mat-cell *matCellDef="let element"> {{element?.birthDate}} </td>
+             </ng-container>
+
+
+
+
+ <!-- Expanded Content Column - The detail row is made up of this one column -->
+ <ng-container matColumnDef="expandedDetail">
+   <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+     <div 
+          [@detailExpand]="element.show ? 'expanded' : 'collapsed'">
+     
+                                  
+    
+       <div class="example-element-description">
+       
+           
+
+          
+         
+       </div>
+     </div>
+   </td>
+ </ng-container>
+
+ <!-- End Expanded row -->
+
+
+
+           <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+           <tr mat-row *matRowDef="let element; columns: columnsToDisplay;"
+           class="example-element-row"
+           [class.example-expanded-row]="expandedElement === element "
+           (click)="toggleRow(element)">
+           <!-- expandedElement = expandedElement === element ? null : element; -->
+       </tr>
+       <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+          </table>
+       </div>
+
+
+
+
+       <div class="bg-card mat-elevation-z8  flex flex-col flex-auto justify-center" *ngIf="userData?.length==0">
+             
+          
+             <img style="width: 157px;height:96px;" class="profile-image avatar huge " src="assets/images/notest.png" [ngClass]=""
+               onerror="this.onerror=null;">
+             <div class="text-center secondary-text" style="width: 184px;margin-left: -37px">Nothing in User List
+         
+           </div>
+         
+         </div>
+
+
+      </div>
+</div>

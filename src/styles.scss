@@ -2,3 +2,100 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.font-extrabold {
+    font-weight: 800!important;
+}
+.text-2xl {
+    font-size: 1.25rem!important;
+}
+.tracking-tight {
+    letter-spacing: -.025em!important;
+}
+
+
+
+
+
+.table-sample{
+    width: 95%;
+    border: 1px solid grey;
+    padding:10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    border-radius: 5em;
+    border-collapse: collapse;
+  
+}
+
+.table-sample th {
+    background-color:#00AFA3 !important;
+    color: white !important;       
+   }
+
+   .table-sample tr { 
+    height: 33px;
+    background-color: rgba(0,179,166,0);
+    border: 1px solid grey;
+    text-align: left;
+    text-align: center;
+}
+
+.table-sample tr:nth-child(odd) {
+    background-color: #f1f1f1;
+    
+    
+    
+  }
+
+.table-sample tr {
+    background-color: #ffffff;
+  }
+
+
+  .highlight{
+    color:gray;
+  }
+
+ 
+
+
+  .table-sample > tbody > tr > td {
+    line-height: 1.42857143;
+    border: 1px solid grey;
+ 
+    
+  }
+  
+  .table-sample > thead > tr > th {
+    line-height: 1.42857143;
+    border: 1px solid grey;
+   
+    
+  }
+
+  
+  .table-sample > tfoot > tr > td {
+    line-height: 1.42857143;
+    border: 1px solid grey;
+  }
+  .table-sample .text-container {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .ui-state-highlight{
+   background-color: #ffe45c !important;
+  }
+
+  .center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    
+}

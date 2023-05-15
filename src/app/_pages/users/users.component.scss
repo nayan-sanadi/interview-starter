@@ -1,0 +1,43 @@
+  
+
+tr.example-detail-row {
+    height: 0;
+  }
+  
+  tr.example-element-row:not(.example-expanded-row):hover {
+    background: #777;
+  }
+  
+  tr.example-element-row:not(.example-expanded-row):active {
+    background: #efefef;
+  }
+  
+  .example-element-row td {
+    border-bottom-width: 0;
+  }
+  
+  
+  
+  
+  .example-element-description {
+    padding: 16px;
+  }
+  
+
+  .button {
+    width: 100%;
+  }
+  
+  .cancleButton {
+    margin-left: 19px;
+  }
+  
+  mat-form-field {
+    margin-top: 10px;
+    width: 49%;
+    margin: 0 0.5%;
+    
+  }
+  
+  
+  
