@@ -1,5 +1,5 @@
 import { EntityAdapter, EntityState, createEntityAdapter } from "@ngrx/entity";
-import { createActionGroup, createFeature, createReducer, emptyProps, props } from "@ngrx/store";
+import { createActionGroup, createFeature, createReducer, emptyProps, on, props } from "@ngrx/store";
 
 const UsersStoreKey = "users";
 
@@ -20,7 +20,7 @@ export interface UsersState extends EntityState<User> {
     selectedUserId: string | null;
 }
 
-const usersAdapter: EntityAdapter<User> = createEntityAdapter<User>();
+export const usersAdapter: EntityAdapter<User> = createEntityAdapter<User>();
 
 const initialState: UsersState = usersAdapter.getInitialState({
     selectedUserId: null
@@ -39,6 +39,20 @@ export const UsersActions = createActionGroup({
 
 export const UsersReducer = createFeature({
     name: UsersStoreKey,
-    reducer: createReducer(initialState)
+    reducer: createReducer(
+        initialState,
+        on(UsersActions.saveInitialUsers, (state, {users}) => {
+            return usersAdapter.setAll(users, { ...state, selectedUserId: null });
+        }),
+        on(UsersActions.addUser, (state, {user}) => {
+            return usersAdapter.addOne(user, state);
+        }),
+        on(UsersActions.updateUser, (state, {user}) => {
+            return usersAdapter.updateOne({id: user.id, changes: user}, state);
+        }),
+        on(UsersActions.deleteUser, (state, {userId}) => {
+            return usersAdapter.removeOne(userId, state);
+        })
+    )
 });
 

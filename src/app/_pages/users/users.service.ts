@@ -12,14 +12,11 @@ export class UsersService {
     private _store:Store
   ) { }
 
-  getUserList():Observable<any>
+  getUserList():Observable<User[]>
   {
     return this._httpClient.get<any>(environment.api + '/users')
             .pipe(
-                map((response) => this.mapToUser(response.users)),
-                tap((response) => {
-                  this._store.dispatch(UsersActions.saveInitialUsers({users: response}))
-                })
+                map((response) => this.mapToUser(response.users))                
             );
   }
 
