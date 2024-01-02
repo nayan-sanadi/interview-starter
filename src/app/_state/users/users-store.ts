@@ -13,6 +13,7 @@ export interface User {
     email: string;
     phone: string;
     birthDate: string;
+    show: boolean;
 }
 
 export interface UsersState extends EntityState<User> {
@@ -30,6 +31,9 @@ export const UsersActions = createActionGroup({
     events: {
         Init: emptyProps(),
         'Save Initial Users': props<{ users: User[] }>(),
+        'Add User': props<{user: User}>(),
+        'Update User': props<{user: User}>(),
+        'Delete User': props<{userId: string}>()
     }
 });
 
