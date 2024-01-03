@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { User, UsersActions } from '@app/_state/users/users-store';
+import { selectAllUsers } from '@app/_state/users/users-selector';
 
 @Component({
   selector: 'app-users',
@@ -23,6 +26,8 @@ export class UsersComponent {
   loadData:boolean=true;
   userData:any=[];
   newData:any=[];
+
+  users$: Observable<User[]>;
 
 
   columnsToDisplay = ['username','age','gender','email','phone','birthDate'];
@@ -47,12 +52,13 @@ export class UsersComponent {
   constructor(
     private _usersService:UsersService,
     private formGroup: FormBuilder,
+    private _store: Store,
     public datepipe: DatePipe,
     
   ) {
 
     this._unsubscribeAll = new Subject();
-
+    this.users$ = this._store.select(selectAllUsers);
    }
 
   ngOnInit(): void {
@@ -69,7 +75,8 @@ export class UsersComponent {
       birthDate:['',[Validators.required]],
     });
 
-    this.getUserList();
+    // this.getUserList();
+    this._store.dispatch(UsersActions.init());
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -81,7 +88,7 @@ export class UsersComponent {
   {
     this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
      
-      this.userData=res.users;
+      this.userData=res;
       this.userData.forEach((element:any) => {
         element.show=false
         element.disabledSpinner=false
