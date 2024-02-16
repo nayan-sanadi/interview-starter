@@ -26,10 +26,12 @@ import {MatTableModule} from '@angular/material/table';
 import {TextFieldModule} from '@angular/cdk/text-field';
 import {MatCardModule} from '@angular/material/card';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { UsersComponent } from './users.component';
 import { UsersService } from './users.service';
+import { UsersEffects } from '@app/_state/users/users-effects';
+import { LoggingInterceptor } from '@app/_shared/logging.interceptor';
 
 
 
@@ -67,6 +69,15 @@ import { UsersService } from './users.service';
     MatExpansionModule,
     DatePipe
   ],
-  providers:[UsersService,DatePipe]
+  providers:[
+    UsersService,
+    DatePipe,
+    UsersEffects,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoggingInterceptor,
+      multi: true
+    },
+  ]
 })
 export class UsersModule { }
