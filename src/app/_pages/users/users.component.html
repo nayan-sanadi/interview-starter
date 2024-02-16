@@ -8,15 +8,15 @@
           <div class="flex-auto p-4 sm:p-4" >
          User Management
           </div>
-          <mat-progress-bar mode="indeterminate" *ngIf="loadData"></mat-progress-bar>
+          <mat-progress-bar mode="indeterminate" *ngIf="(users$ | async) === undefined"></mat-progress-bar>
       </div>
 
       <div class="flex-auto p-4 sm:p-4" >
 
-       <div  class="bg-card mat-elevation-z8  flex flex-col flex-auto justify" *ngIf="userData?.length>0">
+       <div  class="bg-card mat-elevation-z8  flex flex-col flex-auto justify" *ngIf="users$ | async as userData">
 
            <table mat-table 
-           [dataSource]="userData" multiTemplateDataRows
+           [dataSource]="users$" multiTemplateDataRows
            class=" table-sample">
            <ng-container matColumnDef="username">
                <th mat-header-cell *matHeaderCellDef> User Name </th>

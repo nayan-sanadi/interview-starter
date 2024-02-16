@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
+import { User, UsersActions, selectAllUsers } from '@app/_state/users/users-store';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-users',
@@ -23,6 +25,8 @@ export class UsersComponent {
   loadData:boolean=true;
   userData:any=[];
   newData:any=[];
+
+  users$: Observable<User[]>;
 
 
   columnsToDisplay = ['username','age','gender','email','phone','birthDate'];
@@ -48,11 +52,11 @@ export class UsersComponent {
     private _usersService:UsersService,
     private formGroup: FormBuilder,
     public datepipe: DatePipe,
-    
+    private _store: Store,
   ) {
 
     this._unsubscribeAll = new Subject();
-
+    this.users$ = this._store.select(selectAllUsers);
    }
 
   ngOnInit(): void {
@@ -69,7 +73,8 @@ export class UsersComponent {
       birthDate:['',[Validators.required]],
     });
 
-    this.getUserList();
+    // this.getUserList();
+    this._store.dispatch(UsersActions.init());
   }
 
   public noWhitespaceValidator(control: FormControl) {
@@ -77,46 +82,51 @@ export class UsersComponent {
     const isValid = !isWhitespace;
     return isValid ? null : { 'whitespace': true };
 }
-  getUserList()
-  {
-    this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
+  // getUserList()
+  // {
+  //   this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
      
-      this.userData=res.users;
-      this.userData.forEach((element:any) => {
-        element.show=false
-        element.disabledSpinner=false
-      });
-      this.loadData=false;
+  //     this.userData=res.users;
+  //     this.userData.forEach((element:any) => {
+  //       element.show=false
+  //       element.disabledSpinner=false
+  //     });
+  //     this.loadData=false;
        
-      });
-  }
+  //     });
+  // }
 
   
-  toggleRow(value:any)
-  {
-    const foundElement = this.userData.find((elem:any) => elem !== undefined && elem.id === value.id)    
-    console.log("The found element is " + JSON.stringify(foundElement));
-    const index = this.userData.indexOf(foundElement);
-  
-    this.userData.forEach((element:any,mainindex:any) => {
+  toggleRow(value:any) {
+    this._store
+      .select(selectAllUsers)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((users: User[]) => {
+        this.userData = [...users];
+        const foundElement: any = users.find((elem:any) => elem !== undefined && elem.id === value.id)    
+        console.log("The found element is " + JSON.stringify(foundElement));
+        const index = users.indexOf(foundElement);
       
-      if(index!=mainindex)
-      {
-        element.show=false;
-      }
-    });
-    this.userForm.get('id').setValue(foundElement.id);
-    this.userForm.get('firstName').setValue(foundElement.firstName);
-    this.userForm.get('maidenName').setValue(foundElement.maidenName);
-    this.userForm.get('lastName').setValue(foundElement.lastName);
-    this.userForm.get('age').setValue(foundElement.age);
-    this.userForm.get('gender').setValue(foundElement.gender);
-    this.userForm.get('gender').setValue(foundElement.gender);
-    this.userForm.get('email').setValue(foundElement.email);
-    this.userForm.get('phone').setValue(foundElement.phone);
-    this.userForm.get('birthDate').setValue(foundElement.birthDate);
-    
-    this.userData[index].show = !this.userData[index].show;
+        this.userData.forEach((element:any,mainindex:any) => {
+          if(index!=mainindex)
+          {
+            element.show=false;
+          }
+        });
+        this.userForm.get('id').setValue(foundElement.id);
+        this.userForm.get('firstName').setValue(foundElement.firstName);
+        this.userForm.get('maidenName').setValue(foundElement.maidenName);
+        this.userForm.get('lastName').setValue(foundElement.lastName);
+        this.userForm.get('age').setValue(foundElement.age);
+        this.userForm.get('gender').setValue(foundElement.gender);
+        this.userForm.get('gender').setValue(foundElement.gender);
+        this.userForm.get('email').setValue(foundElement.email);
+        this.userForm.get('phone').setValue(foundElement.phone);
+        this.userForm.get('birthDate').setValue(foundElement.birthDate);
+        
+        this.userData[index].show = !this.userData[index].show;
+
+      })
   }
 
 
