@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
-import { Store, select } from '@ngrx/store';
-import { UsersActions } from '@app/_state/users/users-store';
+import { Store } from '@ngrx/store';
+import { User, UsersActions } from '@app/_state/users/users-store';
 import { selectAllUsers, selectSelectedUserId } from '@app/_state/users/users-selectors';
+import { MatTableDataSource } from '@angular/material/table';
+import { CdkTableDataSourceInput } from '@angular/cdk/table';
 
 @Component({
   selector: 'app-users',
@@ -25,6 +27,7 @@ export class UsersComponent {
   disabledSpinner: boolean = false;
   loadData: boolean = true;
   userData: any = [];
+  userData$: Observable<(User | undefined)[]>;
   newData: any = [];
 
   columnsToDisplay = ['username', 'age', 'gender', 'email', 'phone', 'birthDate'];
@@ -38,7 +41,7 @@ export class UsersComponent {
       value: "female",
     }
   ];
-  dataSource: any
+  dataSource: CdkTableDataSourceInput<User | undefined>;
 
   save: boolean = false;
   expandedElement: any;
@@ -53,19 +56,37 @@ export class UsersComponent {
     private store: Store
   ) {
 
+    this.dataSource = new MatTableDataSource();
+
     this._unsubscribeAll = new Subject();
 
-    this.store.pipe(select(selectSelectedUserId)).subscribe(selectedUserId => {
-      console.warn('Selected User ID changed:', selectedUserId);
-    });
-
-    this.store.pipe(select(selectAllUsers)).subscribe(users => {
-      console.warn(users)
-    })
+    this.userData$ = this.store.select(selectAllUsers)
   }
 
 
   ngOnInit(): void {
+    this.store
+      .select(selectSelectedUserId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(selectedUserId => {
+        console.warn('Selected User ID changed:', selectedUserId);
+      });
+
+    this.userData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(users => {
+        // populate dataSource when it is empty only
+        if (users.length > 0 && this.userData.length == 0) {
+          const deepClonedObject = JSON.parse(JSON.stringify(users));
+          this.userData = deepClonedObject;
+          this.dataSource = new MatTableDataSource(this.userData);
+          this.userData.forEach((element: any) => {
+            element.show = false
+            element.disabledSpinner = false
+          });
+          this.loadData = false;
+        }
+      })
 
     this.userForm = this.formGroup.group({
       id: ['', [Validators.required]],
@@ -79,30 +100,14 @@ export class UsersComponent {
       birthDate: ['', [Validators.required]],
     });
 
-    this.getUserList();
+    this.store.dispatch(UsersActions.init())
   }
+
 
   public noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
     const isValid = !isWhitespace;
     return isValid ? null : { 'whitespace': true };
-  }
-  getUserList() {
-
-    this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res => {
-
-      this.userData = res.users;
-      this.userData.forEach((element: any) => {
-        element.show = false
-        element.disabledSpinner = false
-      });
-      this.loadData = false;
-
-      const deepClonedObject = JSON.parse(JSON.stringify(res.users));
-
-      this.store.dispatch(UsersActions.saveInitialUsers({ users: deepClonedObject }))
-
-    });
   }
 
 
