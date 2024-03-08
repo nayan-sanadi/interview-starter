@@ -4,6 +4,9 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
+import { Store, select } from '@ngrx/store';
+import { UsersActions } from '@app/_state/users/users-store';
+import { selectAllUsers, selectSelectedUserId } from '@app/_state/users/users-selectors';
 
 @Component({
   selector: 'app-users',
@@ -48,11 +51,18 @@ export class UsersComponent {
     private _usersService:UsersService,
     private formGroup: FormBuilder,
     public datepipe: DatePipe,
-    
+    private store: Store
   ) {
 
     this._unsubscribeAll = new Subject();
 
+    this.store.pipe(select(selectSelectedUserId)).subscribe(selectedUserId => {
+      console.warn('Selected User ID changed:', selectedUserId);
+    });
+
+    this.store.pipe(select(selectAllUsers)).subscribe(users => {
+      console.warn(users)
+    })
    }
 
   ngOnInit(): void {
@@ -80,13 +90,17 @@ export class UsersComponent {
   getUserList()
   {
     this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
-     
-      this.userData=res.users;
+
+      this.userData = res.users;
       this.userData.forEach((element:any) => {
         element.show=false
         element.disabledSpinner=false
       });
       this.loadData=false;
+
+      const deepClonedObject = JSON.parse(JSON.stringify(res.users));
+
+      this.store.dispatch(UsersActions['saveInitialUsers']({ users: deepClonedObject }))
        
       });
   }
@@ -97,9 +111,10 @@ export class UsersComponent {
     const foundElement = this.userData.find((elem:any) => elem !== undefined && elem.id === value.id)    
     console.log("The found element is " + JSON.stringify(foundElement));
     const index = this.userData.indexOf(foundElement);
+
+    this.store.dispatch(UsersActions['setSelectedUserId']({ selectedUserId: foundElement.id }))
   
     this.userData.forEach((element:any,mainindex:any) => {
-      
       if(index!=mainindex)
       {
         element.show=false;
@@ -147,6 +162,8 @@ export class UsersComponent {
         
         element.disabledSpinner = true;
       }
+
+      this.store.dispatch(UsersActions['updateUser']({ id: element.id, changes: {...element} }))
    });
 
    this.userData=this.newData;
