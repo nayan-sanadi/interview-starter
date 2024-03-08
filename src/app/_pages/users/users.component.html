@@ -13,10 +13,10 @@
 
       <div class="flex-auto p-4 sm:p-4" >
 
-       <div  class="bg-card mat-elevation-z8  flex flex-col flex-auto justify" *ngIf="userData?.length>0">
+       <div  class="bg-card mat-elevation-z8  flex flex-col flex-auto justify" *ngIf="userData$ | async as userData">
 
            <table mat-table 
-           [dataSource]="userData" multiTemplateDataRows
+           [dataSource]="dataSource" multiTemplateDataRows
            class=" table-sample">
            <ng-container matColumnDef="username">
                <th mat-header-cell *matHeaderCellDef> User Name </th>
@@ -206,7 +206,7 @@
 
 
 
-       <div class="bg-card mat-elevation-z8  flex flex-col flex-auto justify-center home-banner " *ngIf="userData?.length==0">
+       <div class="bg-card mat-elevation-z8  flex flex-col flex-auto justify-center home-banner " *ngIf="!(userData$ | async)">
              
           
              <img style="width: 157px;height:96px;" class="banner-image " src="assets/images/notest.png" [ngClass]=""
