@@ -1,7 +1,7 @@
 import { EntityAdapter, EntityState, createEntityAdapter } from "@ngrx/entity";
 import { createActionGroup, createFeature, createReducer, emptyProps, on, props } from "@ngrx/store";
 
-const UsersStoreKey = "users";
+export const UsersStoreKey = "users";
 
 export interface User {
     id: string;
