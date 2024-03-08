@@ -32,7 +32,7 @@ export const UsersActions = createActionGroup({
     events: {
         Init: emptyProps(),
         'Save Initial Users': props<{ users: User[] }>(),
-        'Update User': props<{ user: User }>(),
+        'Update User': props<{ id: string, changes: User }>(),
         'Set Selected User ID': props<{ selectedUserId: any }>(),
     }
 });
@@ -44,8 +44,8 @@ export const UsersReducer = createFeature({
         on(UsersActions['saveInitialUsers'], (state, { users }) => {
             return usersAdapter.setAll(users, state)
         }),
-        on(UsersActions['updateUser'], (state, { user }) => {
-            return usersAdapter.updateOne({id: state.selectedUserId ?? "-1", changes: user}, state)
+        on(UsersActions['updateUser'], (state, { id, changes }) => {
+            return usersAdapter.updateOne({ id, changes }, state)
         }),
         on(UsersActions['setSelectedUserId'], (state, { selectedUserId }) => {
             return {
