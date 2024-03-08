@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { User, UsersActions } from '@app/_state/users/users-store';
@@ -50,7 +49,6 @@ export class UsersComponent {
 
 
   constructor(
-    private _usersService: UsersService,
     private formGroup: FormBuilder,
     public datepipe: DatePipe,
     private store: Store
