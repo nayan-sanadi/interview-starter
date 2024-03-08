@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { UsersState } from './users-store';
+import { UsersState, UsersStoreKey } from './users-store';
 
-export const selectUsersState = createFeatureSelector<UsersState>('users');
+export const selectUsersState = createFeatureSelector<UsersState>(UsersStoreKey);
 
 // Get the selectedUserId from the UsersState
 export const selectSelectedUserId = createSelector(
