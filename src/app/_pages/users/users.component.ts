@@ -40,7 +40,7 @@ export class UsersComponent {
       value: "female",
     }
   ];
-  dataSource: CdkTableDataSourceInput<User | undefined>;
+  dataSource: CdkTableDataSourceInput<any>;
 
   save: boolean = false;
   expandedElement: any;
@@ -73,6 +73,8 @@ export class UsersComponent {
     this.userData$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe(users => {
+        console.warn("USERS STATE FROM REDUCER: ", users)
+
         // populate dataSource when it is empty only
         if (users.length > 0 && this.userData.length == 0) {
           const deepClonedObject = JSON.parse(JSON.stringify(users));
@@ -157,10 +159,13 @@ export class UsersComponent {
             element.phone = this.userForm.value.phone;
             element.birthDate = this.userForm.value.birthDate;
 
+            const deepClonedObject = JSON.parse(JSON.stringify(element));
+            const changes = deepClonedObject;
+
+            this.store.dispatch(UsersActions.updateUser({ id: element.id, changes }))
+
             element.disabledSpinner = true;
           }
-
-          this.store.dispatch(UsersActions.updateUser({ id: element.id, changes: { ...element } }))
         });
 
         this.userData = this.newData;
@@ -171,7 +176,7 @@ export class UsersComponent {
             this.disabledSpinner = false;
             this.save = false;
           }
-
+          
         });
       }, 5000);
     }
