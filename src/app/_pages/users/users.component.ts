@@ -100,7 +100,7 @@ export class UsersComponent {
 
       const deepClonedObject = JSON.parse(JSON.stringify(res.users));
 
-      this.store.dispatch(UsersActions['saveInitialUsers']({ users: deepClonedObject }))
+      this.store.dispatch(UsersActions.saveInitialUsers({ users: deepClonedObject }))
 
     });
   }
@@ -112,7 +112,7 @@ export class UsersComponent {
     console.log("The found element is " + JSON.stringify(foundElement));
     const index = this.userData.indexOf(foundElement);
 
-    this.store.dispatch(UsersActions['setSelectedUserId']({ selectedUserId: foundElement.id }))
+    this.store.dispatch(UsersActions.setSelectedUserId({ selectedUserId: foundElement.id }))
 
     this.userData.forEach((element: any, mainindex: any) => {
       if (index != mainindex) {
@@ -157,7 +157,7 @@ export class UsersComponent {
             element.disabledSpinner = true;
           }
 
-          this.store.dispatch(UsersActions['updateUser']({ id: element.id, changes: { ...element } }))
+          this.store.dispatch(UsersActions.updateUser({ id: element.id, changes: { ...element } }))
         });
 
         this.userData = this.newData;
