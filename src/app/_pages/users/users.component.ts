@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { UsersService } from './users.service';
 import { DatePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { User, UsersActions } from '@app/_state/users/users-store';
+import { selectAllUsers, selectSelectedUserId } from '@app/_state/users/users-selectors';
+import { MatTableDataSource } from '@angular/material/table';
+import { CdkTableDataSourceInput } from '@angular/cdk/table';
 
 @Component({
   selector: 'app-users',
@@ -19,90 +23,105 @@ import { DatePipe } from '@angular/common';
 })
 export class UsersComponent {
 
-  disabledSpinner:boolean=false;
-  loadData:boolean=true;
-  userData:any=[];
-  newData:any=[];
+  disabledSpinner: boolean = false;
+  loadData: boolean = true;
+  userData: any = [];
+  userData$: Observable<(User | undefined)[]>;
+  newData: any = [];
 
-
-  columnsToDisplay = ['username','age','gender','email','phone','birthDate'];
-  genderArray=[
+  columnsToDisplay = ['username', 'age', 'gender', 'email', 'phone', 'birthDate'];
+  genderArray = [
     {
-      name:"male",
-      value:"male",
+      name: "male",
+      value: "male",
     },
     {
-      name:"female",
-      value:"female",
+      name: "female",
+      value: "female",
     }
   ];
-  dataSource:any
+  dataSource: CdkTableDataSourceInput<any>;
 
-  save:boolean=false;
+  save: boolean = false;
   expandedElement: any;
-  userForm:any=FormGroup;
+  userForm: any = FormGroup;
   private _unsubscribeAll: Subject<any>;
 
 
   constructor(
-    private _usersService:UsersService,
     private formGroup: FormBuilder,
     public datepipe: DatePipe,
-    
+    private store: Store
   ) {
+
+    this.dataSource = new MatTableDataSource();
 
     this._unsubscribeAll = new Subject();
 
-   }
+    this.userData$ = this.store.select(selectAllUsers)
+  }
+
 
   ngOnInit(): void {
+    this.store
+      .select(selectSelectedUserId)
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(selectedUserId => {
+        console.warn('Selected User ID changed:', selectedUserId);
+      });
+
+    this.userData$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe(users => {
+        console.warn("USERS STATE FROM REDUCER: ", users)
+
+        // populate dataSource when it is empty only
+        if (users.length > 0 && this.userData.length == 0) {
+          const deepClonedObject = JSON.parse(JSON.stringify(users));
+          this.userData = deepClonedObject;
+          this.dataSource = new MatTableDataSource(this.userData);
+          this.userData.forEach((element: any) => {
+            element.show = false
+            element.disabledSpinner = false
+          });
+          this.loadData = false;
+        }
+      })
 
     this.userForm = this.formGroup.group({
-      id:['',[Validators.required]],
-      firstName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
-      maidenName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
-      lastName:['',[Validators.required,Validators.pattern('^[a-zA-Z ]*$'),this.noWhitespaceValidator]],
-      age:['',[Validators.required]],
-      gender:['',[Validators.required]],
-      email:['',[Validators.required,Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
-      phone:['',[Validators.required]],
-      birthDate:['',[Validators.required]],
+      id: ['', [Validators.required]],
+      firstName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]*$'), this.noWhitespaceValidator]],
+      maidenName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]*$'), this.noWhitespaceValidator]],
+      lastName: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]*$'), this.noWhitespaceValidator]],
+      age: ['', [Validators.required]],
+      gender: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+      phone: ['', [Validators.required]],
+      birthDate: ['', [Validators.required]],
     });
 
-    this.getUserList();
+    this.store.dispatch(UsersActions.init())
   }
+
 
   public noWhitespaceValidator(control: FormControl) {
     const isWhitespace = (control.value || '').trim().length === 0;
     const isValid = !isWhitespace;
     return isValid ? null : { 'whitespace': true };
-}
-  getUserList()
-  {
-    this._usersService.getUserList().pipe(takeUntil(this._unsubscribeAll)).subscribe(res=>{
-     
-      this.userData=res.users;
-      this.userData.forEach((element:any) => {
-        element.show=false
-        element.disabledSpinner=false
-      });
-      this.loadData=false;
-       
-      });
   }
 
-  
-  toggleRow(value:any)
-  {
-    const foundElement = this.userData.find((elem:any) => elem !== undefined && elem.id === value.id)    
+
+  toggleRow(value: any) {
+
+    const foundElement = this.userData.find((elem: any) => elem !== undefined && elem.id === value.id)
     console.log("The found element is " + JSON.stringify(foundElement));
     const index = this.userData.indexOf(foundElement);
-  
-    this.userData.forEach((element:any,mainindex:any) => {
-      
-      if(index!=mainindex)
-      {
-        element.show=false;
+
+    this.store.dispatch(UsersActions.setSelectedUserId({ selectedUserId: foundElement.id }))
+
+    this.userData.forEach((element: any, mainindex: any) => {
+      if (index != mainindex) {
+        element.show = false;
       }
     });
     this.userForm.get('id').setValue(foundElement.id);
@@ -115,63 +134,61 @@ export class UsersComponent {
     this.userForm.get('email').setValue(foundElement.email);
     this.userForm.get('phone').setValue(foundElement.phone);
     this.userForm.get('birthDate').setValue(foundElement.birthDate);
-    
+
     this.userData[index].show = !this.userData[index].show;
   }
 
 
-  saveUser()
-  {
+  saveUser() {
 
-    if(this.userForm.status=="VALID")
-   {
-   
+    if (this.userForm.status == "VALID") {
+      this.disabledSpinner = true;
+      this.save = true;
+      this.newData = this.userData;
+      setTimeout(() => {
+        this.newData.forEach((element: any) => {
 
-    this.disabledSpinner=true;
-    this.save=true;
-    this.newData= this.userData;
-    setTimeout(() => {
-    this.newData.forEach((element:any) => {
+          if (element.id === this.userForm.value.id) {
 
-      if(element.id===this.userForm.value.id)
-      {
-        
-        element.firstName = this.userForm.value.firstName;
-        element.lastName = this.userForm.value.lastName;
-        element.maidenName = this.userForm.value.maidenName;
-        element.gender = this.userForm.value.gender;
-        element.age = this.userForm.value.age;
-        element.email = this.userForm.value.email;
-        element.phone = this.userForm.value.phone;
-        element.birthDate = this.userForm.value.birthDate;
-        
-        element.disabledSpinner = true;
-      }
-   });
+            element.firstName = this.userForm.value.firstName;
+            element.lastName = this.userForm.value.lastName;
+            element.maidenName = this.userForm.value.maidenName;
+            element.gender = this.userForm.value.gender;
+            element.age = this.userForm.value.age;
+            element.email = this.userForm.value.email;
+            element.phone = this.userForm.value.phone;
+            element.birthDate = this.userForm.value.birthDate;
 
-   this.userData=this.newData;
-   this.newData.forEach((element:any) => {
+            const deepClonedObject = JSON.parse(JSON.stringify(element));
+            const changes = deepClonedObject;
 
-    if(element.id===this.userForm.value.id)
-    {
-    element.show = false;
-    this.disabledSpinner=false;
-    this.save=false;
+            this.store.dispatch(UsersActions.updateUser({ id: element.id, changes }))
+
+            element.disabledSpinner = true;
+          }
+        });
+
+        this.userData = this.newData;
+        this.newData.forEach((element: any) => {
+
+          if (element.id === this.userForm.value.id) {
+            element.show = false;
+            this.disabledSpinner = false;
+            this.save = false;
+          }
+          
+        });
+      }, 5000);
     }
-    
-  });
-  }, 5000);
-   }
-   
   }
 
-  closeExpendedDiv(value:any)
-  {
-    const foundElement = this.userData.find((elem:any) => elem !== undefined && elem.id === value.id)    
+
+  closeExpendedDiv(value: any) {
+    const foundElement = this.userData.find((elem: any) => elem !== undefined && elem.id === value.id)
     const index = this.userData.indexOf(foundElement);
     this.userData[index].show = !this.userData[index].show;
-    this.disabledSpinner=false;
-    this.save=false;
+    this.disabledSpinner = false;
+    this.save = false;
   }
 
 }
